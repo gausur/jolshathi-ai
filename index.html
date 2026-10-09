@@ -1,131 +1,199 @@
 
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JolShathi AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#087f8c">
+  <title>JolShathi AI — Stay Safe</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background: #eef7f6;
-      color: #183b40;
       margin: 0;
       padding: 20px;
+      font-family: system-ui, sans-serif;
+      background: #eef8f8;
+      color: #163b40;
     }
-    .app {
-      max-width: 520px;
+    main {
+      max-width: 650px;
       margin: 20px auto;
       background: white;
       padding: 24px;
       border-radius: 18px;
-      box-shadow: 0 5px 20px #0001;
+      box-shadow: 0 5px 24px #164c4c12;
     }
-    h1 { color: #087e78; }
+    h1 { color: #087f8c; margin-bottom: 8px; }
+    p { line-height: 1.7; }
     label {
       display: block;
-      margin-top: 16px;
-      font-weight: bold;
+      font-weight: 650;
+      margin: 18px 0 7px;
     }
-    select, button {
-      box-sizing: border-box;
+    select, textarea, button {
       width: 100%;
       padding: 13px;
-      margin-top: 8px;
-      border-radius: 9px;
-      font-size: 16px;
+      border-radius: 10px;
+      font: inherit;
     }
-    select { border: 1px solid #b7d4d1; }
+    select, textarea {
+      border: 1px solid #b6d2d4;
+      background: #fff;
+      color: #163b40;
+    }
+    textarea { min-height: 90px; resize: vertical; }
     button {
-      background: #087e78;
-      color: white;
+      margin-top: 18px;
       border: 0;
-      margin-top: 22px;
+      background: #087f8c;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:focus-visible, select:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid #f1b84b;
+      outline-offset: 2px;
     }
     #result {
       display: none;
-      margin-top: 20px;
-      padding: 16px;
-      background: #e5f5ec;
-      border-radius: 12px;
-      line-height: 1.7;
+      margin-top: 22px;
+      padding: 18px;
+      background: #eaf7f2;
+      border-left: 5px solid #168363;
+      border-radius: 10px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
     }
-    .note { font-size: 13px; color: #52676a; }
+    .note { font-size: .9rem; color: #536b70; }
   </style>
 </head>
 <body>
-  <main class="app">
-    <h1>🌧️ JolShathi AI</h1>
-    <p>বৃষ্টি ও জলাবদ্ধতার জন্য প্রস্তুত থাকুন।</p>
-    <p>আপনার এলাকার অবস্থা নির্বাচন করুন।</p>
+<main>
+  <h1>🌧️ JolShathi AI</h1>
+  <p>Get practical safety advice during heavy rain and waterlogging.</p>
 
-    <label for="rain">বৃষ্টির অবস্থা</label>
-    <select id="rain">
-      <option value="low">হালকা বৃষ্টি</option>
-      <option value="medium">মাঝারি বৃষ্টি</option>
-      <option value="high">ভারী বৃষ্টি</option>
-    </select>
+  <label for="rain">Rainfall level</label>
+  <select id="rain">
+    <option value="low">Light rainfall</option>
+    <option value="medium">Moderate rainfall</option>
+    <option value="high">Heavy rainfall</option>
+  </select>
 
-    <label for="water">এলাকায় জলাবদ্ধতা আছে?</label>
-    <select id="water">
-      <option value="no">না</option>
-      <option value="yes">হ্যাঁ</option>
-    </select>
+  <label for="water">Is your area waterlogged?</label>
+  <select id="water">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+  </select>
 
-    <button onclick="assess()">আমার প্রস্তুতির পরামর্শ দেখুন</button>
+  <label for="question">Your question (optional)</label>
+  <textarea id="question" maxlength="500"
+    placeholder="Example: Water is covering the road. What should I do?"></textarea>
 
-    <section id="result" aria-live="polite"></section>
+  <button id="ask">Get Safety Advice</button>
 
-    <p class="note">
-      এটি প্রাথমিক শিক্ষামূলক মূল্যায়ন, সরকারি পূর্বাভাস নয়।
-      জরুরি পরিস্থিতিতে সরকারি সতর্কতা অনুসরণ করুন।
-    </p>
-  </main>
+  <section id="result" aria-live="polite" role="status"></section>
 
-  <script>
-    function assess() {
-      const rain = document.getElementById("rain").value;
-      const water = document.getElementById("water").value;
-      const result = document.getElementById("result");
+  <p class="note">
+    Disclaimer: This is a rule-based assistant, not a live weather
+    forecasting system. Follow official weather alerts and local
+    disaster management instructions.
+  </p>
+</main>
 
-      let level = "তুলনামূলক কম সতর্কতা";
-      let advice = [
-        "আবহাওয়ার আপডেট দেখুন।",
-        "ফোন চার্জ রাখুন।"
-      ];
+<script>
+  const rain = document.getElementById("rain");
+  const water = document.getElementById("water");
+  const question = document.getElementById("question");
+  const result = document.getElementById("result");
 
-      if (rain === "medium") {
-        level = "সতর্ক থাকুন";
-        advice.push("বৃষ্টির পরিস্থিতি পর্যবেক্ষণ করুন।");
-      }
+  document.getElementById("ask").addEventListener("click", () => {
+    const r = rain.value;
+    const w = water.value;
+    const q = question.value.trim().toLowerCase();
 
-      if (rain === "high" || water === "yes") {
-        level = "বাড়তি সতর্কতা প্রয়োজন";
-        advice.push("জরুরি কাগজপত্র ও শুকনো জিনিস নিরাপদে রাখুন।");
-        advice.push("জলাবদ্ধ পানিতে হাঁটা বা গাড়ি চালানো এড়িয়ে চলুন।");
-        advice.push("স্থানীয় সরকারি সতর্কতা যাচাই করুন।");
-      }
+    let title = "🟢 General Precautions";
+    let advice = [
+      "Monitor changes in the weather.",
+      "Keep your phone charged and emergency contacts available."
+    ];
 
-      result.style.display = "block";
-      result.replaceChildren();
-
-      const heading = document.createElement("h2");
-      heading.textContent = level;
-      result.appendChild(heading);
-
-      const list = document.createElement("ul");
-      advice.forEach(function(item) {
-        const li = document.createElement("li");
-        li.textContent = item;
-        list.appendChild(li);
-      });
-      result.appendChild(list);
-
-      const note = document.createElement("p");
-      note.textContent =
-        "এই ফলাফল আপনার দেওয়া তথ্যের ভিত্তিতে তৈরি; এটি AI পূর্বাভাস নয়।";
-      result.appendChild(note);
+    if (r === "medium") {
+      title = "🟡 Stay Alert";
+      advice.push(
+        "Avoid unnecessary travel.",
+        "Check local weather updates."
+      );
     }
-  </script>
+
+    if (r === "high" || w === "yes") {
+      title = "🟠 Increased Caution";
+      advice.push(
+        "Keep important documents and electronics in a dry, elevated place.",
+        "Never walk or drive through floodwater or strong currents.",
+        "Follow instructions from local authorities."
+      );
+    }
+
+    if (q) {
+      const electricWords =
+        /electricity|electric|power line|wire|electrical/;
+      const floodWords =
+        /flood|water entering|rising water|current|water level/;
+      const healthWords =
+        /sick|fever|diarrhea|drinking water|unsafe water/;
+      const shelterWords =
+        /shelter|where should i go|evacuate|leave home/;
+
+      if (electricWords.test(q)) {
+        title = "🔴 Electrical Hazard";
+        advice.push(
+          "Stay away from floodwater and fallen electrical wires.",
+          "Never touch switches or electrical equipment with wet hands.",
+          "Contact the electricity authority or emergency services from a safe location."
+        );
+      } else if (floodWords.test(q)) {
+        title = "🟠 Flood Safety";
+        advice.push(
+          "Move to higher ground if water rises rapidly.",
+          "Never attempt to cross moving floodwater.",
+          "Move to a safe shelter when instructed by local authorities."
+        );
+      } else if (healthWords.test(q)) {
+        title = "💧 Health and Safe Water";
+        advice.push(
+          "Use safe drinking water; do not drink water that may be contaminated.",
+          "Consult a healthcare professional if you become ill."
+        );
+      } else if (shelterWords.test(q)) {
+        advice.push(
+          "Contact local authorities for information about designated shelters.",
+          "Check whether the route is safe and avoid flooded roads."
+        );
+      } else {
+        advice.push(
+          "This version may not have a specific answer to your question.",
+          "Follow guidance from local authorities for your situation."
+        );
+      }
+    }
+
+    result.replaceChildren();
+
+    const heading = document.createElement("h2");
+    heading.textContent = title;
+    result.appendChild(heading);
+
+    const list = document.createElement("ul");
+    [...new Set(advice)].forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      list.appendChild(li);
+    });
+
+    result.appendChild(list);
+    result.style.display = "block";
+  });
+</script>
 </body>
 </html>
