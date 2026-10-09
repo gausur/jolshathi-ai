@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JolShathi AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef7f6;
+      color: #183b40;
+      margin: 0;
+      padding: 20px;
+    }
+    .app {
+      max-width: 520px;
+      margin: 20px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px #0001;
+    }
+    h1 { color: #087e78; }
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+    select, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+    select { border: 1px solid #b7d4d1; }
+    button {
+      background: #087e78;
+      color: white;
+      border: 0;
+      margin-top: 22px;
+    }
+    #result {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      background: #e5f5ec;
+      border-radius: 12px;
+      line-height: 1.7;
+    }
+    .note { font-size: 13px; color: #52676a; }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>🌧️ JolShathi AI</h1>
+    <p>বৃষ্টি ও জলাবদ্ধতার জন্য প্রস্তুত থাকুন।</p>
+    <p>আপনার এলাকার অবস্থা নির্বাচন করুন।</p>
+
+    <label for="rain">বৃষ্টির অবস্থা</label>
+    <select id="rain">
+      <option value="low">হালকা বৃষ্টি</option>
+      <option value="medium">মাঝারি বৃষ্টি</option>
+      <option value="high">ভারী বৃষ্টি</option>
+    </select>
+
+    <label for="water">এলাকায় জলাবদ্ধতা আছে?</label>
+    <select id="water">
+      <option value="no">না</option>
+      <option value="yes">হ্যাঁ</option>
+    </select>
+
+    <button onclick="assess()">আমার প্রস্তুতির পরামর্শ দেখুন</button>
+
+    <section id="result" aria-live="polite"></section>
+
+    <p class="note">
+      এটি প্রাথমিক শিক্ষামূলক মূল্যায়ন, সরকারি পূর্বাভাস নয়।
+      জরুরি পরিস্থিতিতে সরকারি সতর্কতা অনুসরণ করুন।
+    </p>
+  </main>
+
+  <script>
+    function assess() {
+      const rain = document.getElementById("rain").value;
+      const water = document.getElementById("water").value;
+      const result = document.getElementById("result");
+
+      let level = "তুলনামূলক কম সতর্কতা";
+      let advice = [
+        "আবহাওয়ার আপডেট দেখুন।",
+        "ফোন চার্জ রাখুন।"
+      ];
+
+      if (rain === "medium") {
+        level = "সতর্ক থাকুন";
+        advice.push("বৃষ্টির পরিস্থিতি পর্যবেক্ষণ করুন।");
+      }
+
+      if (rain === "high" || water === "yes") {
+        level = "বাড়তি সতর্কতা প্রয়োজন";
+        advice.push("জরুরি কাগজপত্র ও শুকনো জিনিস নিরাপদে রাখুন।");
+        advice.push("জলাবদ্ধ পানিতে হাঁটা বা গাড়ি চালানো এড়িয়ে চলুন।");
+        advice.push("স্থানীয় সরকারি সতর্কতা যাচাই করুন।");
+      }
+
+      result.style.display = "block";
+      result.replaceChildren();
+
+      const heading = document.createElement("h2");
+      heading.textContent = level;
+      result.appendChild(heading);
+
+      const list = document.createElement("ul");
+      advice.forEach(function(item) {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.appendChild(li);
+      });
+      result.appendChild(list);
+
+      const note = document.createElement("p");
+      note.textContent =
+        "এই ফলাফল আপনার দেওয়া তথ্যের ভিত্তিতে তৈরি; এটি AI পূর্বাভাস নয়।";
+      result.appendChild(note);
+    }
+  </script>
+</body>
+</html>
